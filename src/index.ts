@@ -17,7 +17,7 @@ await askSettings().then(() => {
         } else {
             bind =
                 addr.address === '::'
-                    ? `http://localhost:${addr?.port}`
+                    ? `${process.env.URL}${addr?.port}`
                     : `port ${addr?.port}`;
         }
         console.log(`Listening on ${bind}`);
