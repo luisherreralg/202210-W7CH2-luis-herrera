@@ -1,65 +1,101 @@
 import { NextFunction, Request, Response } from 'express';
+import { Data } from '../data/data.js';
+import { HTTPError } from '../interfaces/error.js';
 import { Thing } from '../interfaces/thing.js';
-import importData from '../mock/data.json' assert { type: 'json' };
-import fs from 'fs/promises';
-
-// const importData = async () => {
-//     const data = await fs.readFile('./data.json', 'utf-8');
-//     return JSON.parse(data) as Thing[];
-// };
-// let data = await importData();
-
-let data: Thing[] = importData.things;
-const file = 'src/mock/data.json';
 
 export class ThingController {
-    getAll(req: Request, resp: Response) {
-        resp.json(data);
-        resp.end();
+    constructor(public dataModel: Data<Thing>) {}
+    async getAll(req: Request, resp: Response, next: NextFunction) {
+        try {
+            const data = await this.dataModel.getAll();
+            resp.json(data).end();
+        } catch (error) {
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
+        }
     }
 
     get(req: Request, resp: Response) {
-        const id = Number(req.params.id);
-        const thing = data.find((item) => item.id === id);
-        if (thing) {
-            resp.json(thing);
-            resp.end();
-        }
+        //
     }
 
-    async post(req: Request, resp: Response) {
-        const newThing: Thing = {
-            ...req.body,
-            id: data.length + 1,
-        };
-        data.push(newThing);
-        await fs.writeFile(file, JSON.stringify({ things: data }));
-        resp.json(newThing);
-        resp.end();
+    async post(req: Request, resp: Response, next: NextFunction) {
+        if (!req.body.title) {
+            const httpError = new HTTPError(
+                406,
+                'Not Acceptable',
+                'Title not included in the data'
+            );
+            next(httpError);
+            return;
+        }
+        try {
+            const newThing = await this.dataModel.post(req.body);
+            resp.json(newThing).end();
+        } catch (error) {
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
+        }
     }
 
     async patch(req: Request, resp: Response, next: NextFunction) {
-        const id = Number(req.params.id);
-        const thing = data.find((item) => item.id === id);
-        if (thing) {
-            const index = data.indexOf(thing);
-            data[index] = { ...thing, ...req.body };
-            await fs.writeFile(file, JSON.stringify({ things: data }));
-            resp.json(data[index]);
-            resp.end();
+        try {
+            const updateThing = await this.dataModel.patch(
+                +req.params.id,
+                req.body
+            );
+            resp.json(updateThing).end();
+        } catch (error) {
+            if ((error as Error).message === 'Not found id') {
+                const httpError = new HTTPError(
+                    404,
+                    'Not Found',
+                    (error as Error).message
+                );
+                next(httpError);
+                return;
+            }
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
+            return;
         }
-        next(new Error('Not found'));
-        return;
     }
 
     async delete(req: Request, resp: Response, next: NextFunction) {
-        if (!data.find((item) => item.id === +req.params.id)) {
-            next(new Error('Not found'));
+        try {
+            await this.dataModel.delete(+req.params.id);
+            resp.json({}).end();
+        } catch (error) {
+            if ((error as Error).message === 'Not found id') {
+                const httpError = new HTTPError(
+                    404,
+                    'Not Found',
+                    (error as Error).message
+                );
+                next(httpError);
+                return;
+            }
+            const httpError = new HTTPError(
+                503,
+                'Service unavailable',
+                (error as Error).message
+            );
+            next(httpError);
             return;
         }
-        data = data.filter((item) => item.id !== +req.params.id);
-        await fs.writeFile(file, JSON.stringify({ things: data }));
-        resp.json({});
-        resp.end;
     }
 }
