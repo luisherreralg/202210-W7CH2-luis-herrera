@@ -1,5 +1,5 @@
 import fs from 'fs/promises';
-import * as dotenv from 'dotenv'; // see https://github.com/motdotla/dotenv#how-do-i-use-dotenv-with-import
+import * as dotenv from 'dotenv';
 dotenv.config();
 import { Thing, Things } from '../interfaces/thing.js';
 import { Data, id } from './data.js';
@@ -50,8 +50,9 @@ export class ThingFileData implements Data<Thing> {
         const aData = await this.getAll();
         const index = aData.findIndex((item) => item.id === id);
         if (!index) throw new Error('Not found id');
-        aData.filter((item) => item.id !== id);
-        await this.#saveData({ things: aData });
+        await this.#saveData({
+            things: aData.filter((item) => item.id !== id),
+        });
     }
 
     #createID() {
