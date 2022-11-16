@@ -20,7 +20,7 @@ export class ThingFileData implements Data<Thing> {
         return fs.readFile(this.dataFileURL, 'utf-8').then((data) => {
             const aData = JSON.parse(data).things as Thing[];
             const index = aData.findIndex((item) => item.id === id);
-            if (!index) throw new Error('Not found id');
+            if (index === -1) throw new Error('Not found id');
             return aData[index];
         });
     }

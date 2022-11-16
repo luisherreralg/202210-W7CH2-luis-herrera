@@ -1,5 +1,6 @@
 {
     "things": [
+        { "title": "Comer pizza", "id": 0 },
         { "title": "Comer pizza", "id": 1 },
         { "title": "Copiar de stackoverflow ", "id": 2 },
         { "title": "No dormir", "id": 3 },
