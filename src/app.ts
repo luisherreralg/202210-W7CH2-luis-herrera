@@ -9,9 +9,19 @@ export const app = express();
 app.use(morgan('dev'));
 app.use(cors());
 app.use(express.json());
+const template = `
+    <body>
+        <h1>API REST</h1>
+        <h2>Endpoints</h2>
+        <ul>
+            <li>/things</li>
+            <li>/things/:id</li>
+        </ul>
+    </body>
+    `;
 
 app.get('/', (_req, res) => {
-    res.send('API Express de tareas').end();
+    res.send(template).end();
 });
 
 app.use('/things', thingRouter);

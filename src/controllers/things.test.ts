@@ -1,3 +1,4 @@
+// Test comentado para evitar problemas en la compilación
 // import { Request, Response } from 'express';
 // import { ThingController } from './things';
 

@@ -7,7 +7,6 @@ export const thingRouter = Router();
 const controller = new ThingController(new ThingFileData());
 
 thingRouter.get('/', controller.getAll.bind(controller));
-// thingRouter.get('/', (req, resp) => controller.getAll(req, resp));
 thingRouter.get('/:id', controller.get.bind(controller));
 thingRouter.post('/', controller.post.bind(controller));
 thingRouter.patch('/:id', controller.patch.bind(controller));
