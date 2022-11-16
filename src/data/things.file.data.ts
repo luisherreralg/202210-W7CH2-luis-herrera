@@ -18,10 +18,10 @@ export class ThingFileData implements Data<Thing> {
 
     async get(id: id): Promise<Thing> {
         return fs.readFile(this.dataFileURL, 'utf-8').then((data) => {
-            const aData = JSON.parse(data) as Things;
-            const item = aData.things.find((item) => item.id === id);
-            if (!item) throw new Error();
-            return item;
+            const aData = JSON.parse(data).things as Thing[];
+            const index = aData.findIndex((item) => item.id === id);
+            if (!index) throw new Error('Not found id');
+            return aData[index];
         });
     }
 
