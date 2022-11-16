@@ -11,10 +11,9 @@ export class ThingFileData implements Data<Thing> {
     }
 
     async getAll(): Promise<Thing[]> {
-        return fs.readFile(this.dataFileURL, 'utf-8').then((data) => {
-            const save = JSON.parse(data) as Things;
-            return save.things;
-        });
+        return fs
+            .readFile(this.dataFileURL, 'utf-8')
+            .then((data) => JSON.parse(data).things as Thing[]);
     }
 
     async get(id: id): Promise<Thing> {
