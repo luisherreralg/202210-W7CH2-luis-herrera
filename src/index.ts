@@ -3,7 +3,8 @@ import { app } from './app.js';
 import * as dotenv from 'dotenv';
 dotenv.config();
 import { CustomError } from './interfaces/error.js';
-import { askSettings } from './utils/cli/cli.js';
+// ! Importación del módulo del CLI de Inquirer
+// import { askSettings } from './utils/cli/cli.js';
 
 // ! Aqui se mete para que funcione el CLI de Inquirer
 // await askSettings().then(() => {

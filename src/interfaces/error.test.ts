@@ -1,4 +1,3 @@
-import exp from 'constants';
 import { CustomError, HTTPError } from './error';
 
 describe('Given', () => {
